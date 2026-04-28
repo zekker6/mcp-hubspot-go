@@ -1,0 +1,8 @@
+tmp/
+bin/
+dist/
+.idea
+*.test
+coverage.out
+.env
+.mise.local.toml

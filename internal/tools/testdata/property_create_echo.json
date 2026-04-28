@@ -1,0 +1,12 @@
+{
+  "name": "loyalty_tier",
+  "label": "Loyalty Tier",
+  "type": "enumeration",
+  "fieldType": "select",
+  "groupName": "companyinformation",
+  "displayOrder": -1,
+  "options": [
+    {"label": "Gold", "value": "gold"},
+    {"label": "Silver", "value": "silver"}
+  ]
+}

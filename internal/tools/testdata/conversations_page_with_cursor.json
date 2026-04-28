@@ -1,0 +1,7 @@
+{
+  "results": [
+    {"id": "t1", "status": "OPEN", "latestMessageReceivedTimestamp": "2024-03-01T00:00:00Z"},
+    {"id": "t2", "status": "CLOSED", "latestMessageReceivedTimestamp": "2024-02-28T00:00:00Z"}
+  ],
+  "paging": {"next": {"after": "cursor-NEXT", "link": "https://api.hubapi.example/x"}}
+}

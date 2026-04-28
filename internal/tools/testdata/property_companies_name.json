@@ -1,0 +1,10 @@
+{
+  "name": "name",
+  "label": "Company name",
+  "type": "string",
+  "fieldType": "text",
+  "groupName": "companyinformation",
+  "displayOrder": 1,
+  "calculated": false,
+  "archived": false
+}

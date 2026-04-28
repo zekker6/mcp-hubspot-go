@@ -1,0 +1,15 @@
+{
+  "results": [
+    {
+      "id": "default",
+      "label": "Sales Pipeline",
+      "displayOrder": 0,
+      "stages": [
+        {"id": "appointmentscheduled", "label": "Appointment Scheduled", "displayOrder": 0},
+        {"id": "qualifiedtobuy", "label": "Qualified To Buy", "displayOrder": 1},
+        {"id": "closedwon", "label": "Closed Won", "displayOrder": 2},
+        {"id": "closedlost", "label": "Closed Lost", "displayOrder": 3}
+      ]
+    }
+  ]
+}

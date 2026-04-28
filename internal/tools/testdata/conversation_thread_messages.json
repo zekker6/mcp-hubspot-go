@@ -1,0 +1,6 @@
+{
+  "results": [
+    {"id": "m1", "type": "MESSAGE", "text": "hello"},
+    {"id": "m2", "type": "MESSAGE", "text": "world"}
+  ]
+}

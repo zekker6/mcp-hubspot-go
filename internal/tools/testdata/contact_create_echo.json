@@ -1,0 +1,7 @@
+{
+  "id": "2999",
+  "properties": {"email": "new@acme.example", "firstname": "New"},
+  "createdAt": "2024-04-01T00:00:00.000Z",
+  "updatedAt": "2024-04-01T00:00:00.000Z",
+  "archived": false
+}

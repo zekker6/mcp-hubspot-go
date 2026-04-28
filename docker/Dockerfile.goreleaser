@@ -1,0 +1,12 @@
+FROM alpine:3.23.4
+
+RUN adduser -D -H -u 10001 mcp
+
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/mcp-hubspot /mcp-hubspot
+
+USER mcp
+
+EXPOSE      8012
+ENTRYPOINT  [ "/mcp-hubspot" ]
+CMD         [ "-httpListenAddr=:8012", "-mode=http" ]

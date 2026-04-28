@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push: { }
+  pull_request: { }
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
+
+      - name: Run lint
+        run: task lint
+
+      - name: Run test
+        run: task test
+
+      - name: Run build
+        run: task build
+
+      - name: Run e2e tests
+        run: task e2e

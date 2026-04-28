@@ -1,0 +1,9 @@
+{
+  "name": "loyalty_tier",
+  "label": "Loyalty Tier (Renamed)",
+  "type": "enumeration",
+  "fieldType": "select",
+  "groupName": "companyinformation",
+  "displayOrder": 5,
+  "archived": false
+}

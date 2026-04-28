@@ -1,0 +1,8 @@
+{
+  "results": [
+    {"engagement": {"id": 9001, "type": "NOTE", "timestamp": 1710000000000}},
+    {"engagement": {"id": 9002, "type": "CALL", "timestamp": 1710003600000}}
+  ],
+  "hasMore": false,
+  "offset": 0
+}

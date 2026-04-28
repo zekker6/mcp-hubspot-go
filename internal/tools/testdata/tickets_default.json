@@ -1,0 +1,29 @@
+{
+  "total": 2,
+  "results": [
+    {
+      "id": "T100",
+      "properties": {
+        "subject": "Cannot login",
+        "content": "Login flow broken",
+        "hs_pipeline_stage": "1",
+        "hs_lastmodifieddate": "2026-04-28T08:00:00.000Z"
+      },
+      "createdAt": "2026-04-27T08:00:00.000Z",
+      "updatedAt": "2026-04-28T08:00:00.000Z",
+      "archived": false
+    },
+    {
+      "id": "T101",
+      "properties": {
+        "subject": "Billing question",
+        "content": "How do I upgrade?",
+        "hs_pipeline_stage": "2",
+        "hs_lastmodifieddate": "2026-04-28T07:00:00.000Z"
+      },
+      "createdAt": "2026-04-27T07:00:00.000Z",
+      "updatedAt": "2026-04-28T07:00:00.000Z",
+      "archived": false
+    }
+  ]
+}

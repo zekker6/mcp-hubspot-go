@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "mcp-hubspot": {
+      "type": "sse",
+      "url": "http://localhost:8012/events",
+      "note": "For SSE connections, add this URL directly in Client"
+    }
+  }
+}

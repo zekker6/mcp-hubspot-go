@@ -1,0 +1,19 @@
+{
+  "total": 2,
+  "results": [
+    {
+      "id": "2001",
+      "properties": {"email": "alice@acme.example", "firstname": "Alice"},
+      "createdAt": "2024-01-02T03:04:05.000Z",
+      "updatedAt": "2024-03-15T08:00:00.000Z",
+      "archived": false
+    },
+    {
+      "id": "2002",
+      "properties": {"email": "bob@globex.example", "firstname": "Bob"},
+      "createdAt": "2024-01-02T03:04:05.000Z",
+      "updatedAt": "2024-03-14T08:00:00.000Z",
+      "archived": false
+    }
+  ]
+}
