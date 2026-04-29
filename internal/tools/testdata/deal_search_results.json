@@ -1,0 +1,20 @@
+{
+  "total": 2,
+  "results": [
+    {
+      "id": "3101",
+      "properties": {"dealname": "Acme Search Renewal", "amount": "25000"},
+      "createdAt": "2024-02-01T03:04:05.000Z",
+      "updatedAt": "2024-04-15T08:00:00.000Z",
+      "archived": false
+    },
+    {
+      "id": "3102",
+      "properties": {"dealname": "Acme Search Expansion", "amount": "15000"},
+      "createdAt": "2024-02-02T03:04:05.000Z",
+      "updatedAt": "2024-04-14T08:00:00.000Z",
+      "archived": false
+    }
+  ],
+  "paging": {"next": {"after": "deal-cursor-NEXT"}}
+}

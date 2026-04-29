@@ -19,15 +19,19 @@ type toolEntry struct {
 var readTools = []toolEntry{
 	{ToolNameGetCompany, NewGetCompanyTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetCompanyHandler(c) }},
 	{ToolNameGetRecentCompanies, NewGetRecentCompaniesTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetRecentCompaniesHandler(c) }},
+	{ToolNameSearchCompanies, NewSearchCompaniesTool, func(c *hubspot.Client) server.ToolHandlerFunc { return SearchCompaniesHandler(c) }},
 	{ToolNameGetCompanyActivity, NewGetCompanyActivityTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetCompanyActivityHandler(c) }},
 	{ToolNameGetContact, NewGetContactTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetContactHandler(c) }},
 	{ToolNameGetRecentContacts, NewGetRecentContactsTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetRecentContactsHandler(c) }},
+	{ToolNameSearchContacts, NewSearchContactsTool, func(c *hubspot.Client) server.ToolHandlerFunc { return SearchContactsHandler(c) }},
 	{ToolNameGetRecentConversations, NewGetRecentConversationsTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetRecentConversationsHandler(c) }},
 	{ToolNameGetTickets, NewGetTicketsTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetTicketsHandler(c) }},
+	{ToolNameSearchTickets, NewSearchTicketsTool, func(c *hubspot.Client) server.ToolHandlerFunc { return SearchTicketsHandler(c) }},
 	{ToolNameGetTicketConversationThreads, NewGetTicketConversationThreadsTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetTicketConversationThreadsHandler(c) }},
 	{ToolNameGetProperty, NewGetPropertyTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetPropertyHandler(c) }},
 	{ToolNameGetDeal, NewGetDealTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetDealHandler(c) }},
 	{ToolNameGetRecentDeals, NewGetRecentDealsTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetRecentDealsHandler(c) }},
+	{ToolNameSearchDeals, NewSearchDealsTool, func(c *hubspot.Client) server.ToolHandlerFunc { return SearchDealsHandler(c) }},
 	{ToolNameGetDealPipelines, NewGetDealPipelinesTool, func(c *hubspot.Client) server.ToolHandlerFunc { return GetDealPipelinesHandler(c) }},
 }
 

@@ -8,7 +8,10 @@ import (
 	"github.com/belong-inc/go-hubspot"
 )
 
-const defaultRecentDealsLimit = 10
+const (
+	defaultRecentDealsLimit = 10
+	defaultSearchDealsLimit = 10
+)
 
 // dealSearchSort mirrors the HubSpot search sort shape.
 type dealSearchSort struct {
@@ -21,8 +24,11 @@ type dealSearchSort struct {
 // wrong path ("deals/search" instead of "crm/v3/objects/deals/search"), so we
 // hit the search endpoint directly via the SDK's generic Post.
 type dealSearchRequest struct {
-	Sorts []dealSearchSort `json:"sorts,omitempty"`
-	Limit int              `json:"limit,omitempty"`
+	Query      string           `json:"query,omitempty"`
+	Sorts      []dealSearchSort `json:"sorts,omitempty"`
+	Properties []string         `json:"properties,omitempty"`
+	Limit      int              `json:"limit,omitempty"`
+	After      string           `json:"after,omitempty"`
 }
 
 // GetDeal fetches a single deal by its ID, optionally requesting additional
@@ -72,6 +78,42 @@ func (c *Client) GetRecentDeals(_ context.Context, limit int) ([]byte, error) {
 	var raw json.RawMessage
 	if err := c.sdk.Post("/crm/v3/objects/deals/search", req, &raw); err != nil {
 		return nil, fmt.Errorf("get recent deals: %w", err)
+	}
+	if len(raw) == 0 {
+		return []byte("null"), nil
+	}
+	return raw, nil
+}
+
+// SearchDeals runs a free-text search against the HubSpot deals search endpoint
+// and returns the raw JSON response. No sort is set so HubSpot orders results
+// by relevance. limit is clamped: <=0 falls back to defaultSearchDealsLimit,
+// values above maxSearchLimit are capped. after is forwarded as-is for paging.
+//
+// Deviation: uses raw HTTP because belong-inc/go-hubspot@v0.10.1's
+// DealServiceOp.Search posts to "deals/search" instead of the CRM-prefixed
+// "crm/v3/objects/deals/search".
+func (c *Client) SearchDeals(_ context.Context, query string, limit int, properties []string, after string) ([]byte, error) {
+	if query == "" {
+		return nil, fmt.Errorf("query is required")
+	}
+	if limit <= 0 {
+		limit = defaultSearchDealsLimit
+	}
+	if limit > maxSearchLimit {
+		limit = maxSearchLimit
+	}
+
+	req := dealSearchRequest{
+		Query:      query,
+		Properties: properties,
+		Limit:      limit,
+		After:      after,
+	}
+
+	var raw json.RawMessage
+	if err := c.sdk.Post("/crm/v3/objects/deals/search", req, &raw); err != nil {
+		return nil, fmt.Errorf("search deals: %w", err)
 	}
 	if len(raw) == 0 {
 		return []byte("null"), nil

@@ -1,0 +1,30 @@
+{
+  "total": 2,
+  "results": [
+    {
+      "id": "T200",
+      "properties": {
+        "subject": "Search returned wrong results",
+        "content": "Search query feedback",
+        "hs_pipeline_stage": "1",
+        "hs_lastmodifieddate": "2026-04-28T08:00:00.000Z"
+      },
+      "createdAt": "2026-04-27T08:00:00.000Z",
+      "updatedAt": "2026-04-28T08:00:00.000Z",
+      "archived": false
+    },
+    {
+      "id": "T201",
+      "properties": {
+        "subject": "Search keyword issue",
+        "content": "Cannot find tickets by keyword",
+        "hs_pipeline_stage": "2",
+        "hs_lastmodifieddate": "2026-04-28T07:00:00.000Z"
+      },
+      "createdAt": "2026-04-27T07:00:00.000Z",
+      "updatedAt": "2026-04-28T07:00:00.000Z",
+      "archived": false
+    }
+  ],
+  "paging": {"next": {"after": "ticket-cursor-NEXT"}}
+}

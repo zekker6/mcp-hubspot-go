@@ -8,7 +8,21 @@ import (
 	"github.com/belong-inc/go-hubspot"
 )
 
-const defaultRecentCompaniesLimit = 10
+const (
+	defaultRecentCompaniesLimit = 10
+	defaultSearchCompaniesLimit = 10
+)
+
+// companySearchRequest mirrors the HubSpot companies search request body. The
+// SDK's typed CompanySearchResponse strips the paging field, so SearchCompanies
+// posts directly via the SDK's generic Post and returns raw JSON to preserve
+// paging.next.after for cursor round-trips.
+type companySearchRequest struct {
+	Query      string   `json:"query,omitempty"`
+	Properties []string `json:"properties,omitempty"`
+	Limit      int      `json:"limit,omitempty"`
+	After      string   `json:"after,omitempty"`
+}
 
 // GetCompany fetches a single company by its ID, optionally requesting
 // additional custom properties on top of the SDK's default field set. The
@@ -58,6 +72,45 @@ func (c *Client) GetRecentCompanies(_ context.Context, limit int) ([]byte, error
 		return nil, fmt.Errorf("marshal recent companies response: %w", err)
 	}
 	return out, nil
+}
+
+// SearchCompanies runs HubSpot's CRM Search API for companies using a
+// free-text query, returning matches in HubSpot's relevance order (no sort).
+// limit is clamped to 1..maxSearchLimit (defaulting to
+// defaultSearchCompaniesLimit when non-positive). after is forwarded as-is for
+// paging - HubSpot's paging.next.after is a string and is round-tripped
+// unchanged.
+//
+// Deviation: bypasses the SDK's typed CompanySearchResponse, which omits the
+// paging field, and posts via the SDK's generic Post to surface raw JSON
+// (mirrors SearchDeals/SearchTickets so all four search methods preserve the
+// cursor end-to-end).
+func (c *Client) SearchCompanies(_ context.Context, query string, limit int, properties []string, after string) ([]byte, error) {
+	if query == "" {
+		return nil, fmt.Errorf("query is required")
+	}
+
+	if limit <= 0 {
+		limit = defaultSearchCompaniesLimit
+	} else if limit > maxSearchLimit {
+		limit = maxSearchLimit
+	}
+
+	req := companySearchRequest{
+		Query:      query,
+		Properties: properties,
+		Limit:      limit,
+		After:      after,
+	}
+
+	var raw json.RawMessage
+	if err := c.sdk.Post("/crm/v3/objects/companies/search", req, &raw); err != nil {
+		return nil, fmt.Errorf("search companies: %w", err)
+	}
+	if len(raw) == 0 {
+		return []byte("null"), nil
+	}
+	return raw, nil
 }
 
 // GetCompanyActivity returns the engagements (notes, calls, emails, tasks,

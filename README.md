@@ -58,21 +58,25 @@ This drops `mcp-hubspot` onto your `PATH`. Pin a specific tag with
 
 ## Tools
 
-### Read tools (always registered - 12)
+### Read tools (always registered - 16)
 
 | Tool | Inputs |
 |---|---|
 | `hubspot_get_company` | `company_id`, `properties` (optional string array) |
 | `hubspot_get_active_companies` | `limit` (default 10) |
+| `hubspot_search_companies` | `query` (required), `limit` (default 10), `properties` (optional), `after` (optional cursor) |
 | `hubspot_get_company_activity` | `company_id` |
 | `hubspot_get_contact` | `contact_id`, `properties` (optional) |
 | `hubspot_get_active_contacts` | `limit` (default 10) |
+| `hubspot_search_contacts` | `query` (required), `limit` (default 10), `properties` (optional), `after` (optional cursor) |
 | `hubspot_get_recent_conversations` | `limit` (default 10), `after` (optional cursor) |
 | `hubspot_get_tickets` | `criteria` (`default` \| `Closed`), `limit` (default 50) |
+| `hubspot_search_tickets` | `query` (required), `limit` (default 10), `properties` (optional), `after` (optional cursor) |
 | `hubspot_get_ticket_conversation_threads` | `ticket_id` |
 | `hubspot_get_property` | `object_type` (`companies` \| `contacts`), `property_name` |
 | `hubspot_get_deal` | `deal_id`, `properties` (optional) |
 | `hubspot_get_active_deals` | `limit` (default 10) |
+| `hubspot_search_deals` | `query` (required), `limit` (default 10), `properties` (optional), `after` (optional cursor) |
 | `hubspot_get_deal_pipelines` | (none) |
 
 ### Write tools (gated by `--read-only` - 8)
@@ -115,7 +119,7 @@ docker run --rm -i \
   ghcr.io/zekker6/mcp-hubspot-go:latest --read-only
 ```
 
-`tools/list` returns 12 tools (read only). Calling any of the 8 write tool
+`tools/list` returns 16 tools (read only). Calling any of the 8 write tool
 names returns the framework's "unknown tool" error.
 
 ## HTTP and SSE modes

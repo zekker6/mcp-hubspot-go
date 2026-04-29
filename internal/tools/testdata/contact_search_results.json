@@ -1,0 +1,20 @@
+{
+  "total": 2,
+  "results": [
+    {
+      "id": "2101",
+      "properties": {"email": "alice.search@acme.example", "firstname": "Alice", "lastname": "Searcher"},
+      "createdAt": "2024-02-01T03:04:05.000Z",
+      "updatedAt": "2024-04-15T08:00:00.000Z",
+      "archived": false
+    },
+    {
+      "id": "2102",
+      "properties": {"email": "alex.search@globex.example", "firstname": "Alex", "lastname": "Searcher"},
+      "createdAt": "2024-02-02T03:04:05.000Z",
+      "updatedAt": "2024-04-14T08:00:00.000Z",
+      "archived": false
+    }
+  ],
+  "paging": {"next": {"after": "contact-cursor-NEXT"}}
+}

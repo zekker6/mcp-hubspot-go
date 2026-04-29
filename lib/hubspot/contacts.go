@@ -8,7 +8,21 @@ import (
 	"github.com/belong-inc/go-hubspot"
 )
 
-const defaultRecentContactsLimit = 10
+const (
+	defaultRecentContactsLimit = 10
+	defaultSearchContactsLimit = 10
+)
+
+// contactSearchRequest mirrors the HubSpot contacts search request body. The
+// SDK's typed ContactSearchResponse strips the paging field, so SearchContacts
+// posts directly via the SDK's generic Post and returns raw JSON to preserve
+// paging.next.after for cursor round-trips.
+type contactSearchRequest struct {
+	Query      string   `json:"query,omitempty"`
+	Properties []string `json:"properties,omitempty"`
+	Limit      int      `json:"limit,omitempty"`
+	After      string   `json:"after,omitempty"`
+}
 
 // GetContact fetches a single contact by its ID, optionally requesting
 // additional custom properties on top of the SDK's default field set. The
@@ -58,6 +72,45 @@ func (c *Client) GetRecentContacts(_ context.Context, limit int) ([]byte, error)
 		return nil, fmt.Errorf("marshal recent contacts response: %w", err)
 	}
 	return out, nil
+}
+
+// SearchContacts runs HubSpot's CRM Search API for contacts using a
+// free-text query, returning matches in HubSpot's relevance order (no sort).
+// limit is clamped to 1..maxSearchLimit (defaulting to
+// defaultSearchContactsLimit when non-positive). after is forwarded as-is for
+// paging - HubSpot's paging.next.after is a string and is round-tripped
+// unchanged.
+//
+// Deviation: bypasses the SDK's typed ContactSearchResponse, which omits the
+// paging field, and posts via the SDK's generic Post to surface raw JSON
+// (mirrors SearchDeals/SearchTickets so all four search methods preserve the
+// cursor end-to-end).
+func (c *Client) SearchContacts(_ context.Context, query string, limit int, properties []string, after string) ([]byte, error) {
+	if query == "" {
+		return nil, fmt.Errorf("query is required")
+	}
+
+	if limit <= 0 {
+		limit = defaultSearchContactsLimit
+	} else if limit > maxSearchLimit {
+		limit = maxSearchLimit
+	}
+
+	req := contactSearchRequest{
+		Query:      query,
+		Properties: properties,
+		Limit:      limit,
+		After:      after,
+	}
+
+	var raw json.RawMessage
+	if err := c.sdk.Post("/crm/v3/objects/contacts/search", req, &raw); err != nil {
+		return nil, fmt.Errorf("search contacts: %w", err)
+	}
+	if len(raw) == 0 {
+		return []byte("null"), nil
+	}
+	return raw, nil
 }
 
 // CreateContact creates a new HubSpot contact. It performs a pre-flight

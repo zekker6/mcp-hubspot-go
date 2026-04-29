@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	defaultTicketsLimit = 50
+	defaultTicketsLimit       = 50
+	defaultSearchTicketsLimit = 10
 
 	ticketsCriteriaDefault = "default"
 	ticketsCriteriaClosed  = "Closed"
@@ -43,10 +44,12 @@ type ticketSearchSort struct {
 // top-level sorts/limit/properties - the actual API requires those at the top
 // level, so we hit the search endpoint directly via the SDK's generic Post.
 type ticketSearchRequest struct {
-	FilterGroups []ticketSearchFilterGroup `json:"filterGroups"`
+	FilterGroups []ticketSearchFilterGroup `json:"filterGroups,omitempty"`
+	Query        string                    `json:"query,omitempty"`
 	Sorts        []ticketSearchSort        `json:"sorts,omitempty"`
 	Properties   []string                  `json:"properties,omitempty"`
 	Limit        int                       `json:"limit,omitempty"`
+	After        string                    `json:"after,omitempty"`
 }
 
 var ticketSearchProperties = []string{
@@ -90,6 +93,43 @@ func (c *Client) GetTickets(_ context.Context, criteria string, limit int) ([]by
 	var raw json.RawMessage
 	if err := c.sdk.Post("/crm/v3/objects/tickets/search", req, &raw); err != nil {
 		return nil, fmt.Errorf("search tickets (criteria=%s): %w", criteria, err)
+	}
+	if len(raw) == 0 {
+		return []byte("null"), nil
+	}
+	return raw, nil
+}
+
+// SearchTickets runs a free-text search against the HubSpot tickets search
+// endpoint and returns the raw JSON response. No filter groups and no sort are
+// set so HubSpot orders results by relevance. limit is clamped: <=0 falls back
+// to defaultSearchTicketsLimit, values above maxSearchLimit are capped. after
+// is forwarded as-is for paging.
+//
+// Deviation: uses raw HTTP because belong-inc/go-hubspot@v0.10.1 does not
+// expose a typed search method for tickets that posts to the CRM-prefixed
+// search path.
+func (c *Client) SearchTickets(_ context.Context, query string, limit int, properties []string, after string) ([]byte, error) {
+	if query == "" {
+		return nil, fmt.Errorf("query is required")
+	}
+	if limit <= 0 {
+		limit = defaultSearchTicketsLimit
+	}
+	if limit > maxSearchLimit {
+		limit = maxSearchLimit
+	}
+
+	req := ticketSearchRequest{
+		Query:      query,
+		Properties: properties,
+		Limit:      limit,
+		After:      after,
+	}
+
+	var raw json.RawMessage
+	if err := c.sdk.Post("/crm/v3/objects/tickets/search", req, &raw); err != nil {
+		return nil, fmt.Errorf("search tickets: %w", err)
 	}
 	if len(raw) == 0 {
 		return []byte("null"), nil

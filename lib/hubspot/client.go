@@ -9,6 +9,12 @@ import (
 	"github.com/belong-inc/go-hubspot"
 )
 
+// maxSearchLimit is the upstream cap on per-page search results documented by
+// the HubSpot CRM Search API and reflected in the SDK comment on
+// SearchOptions.Limit ("the maximum number of entries per page is 200"). It is
+// shared by all SearchX methods on Client.
+const maxSearchLimit = 200
+
 // Client wraps the HubSpot SDK with thin domain-specific helpers.
 type Client struct {
 	sdk *hubspot.Client

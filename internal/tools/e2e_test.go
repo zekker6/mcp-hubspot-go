@@ -51,6 +51,10 @@ func newFakeHubSpot(t *testing.T) *fakeHubSpot {
 			writeFixture(t, w, "company_search_empty.json")
 			return
 		}
+		if hasQuery(body) {
+			writeFixture(t, w, "company_search_results.json")
+			return
+		}
 		writeFixture(t, w, "recent_companies.json")
 	})
 	mux.HandleFunc("/crm/v3/objects/companies", func(w http.ResponseWriter, r *http.Request) {
@@ -95,6 +99,10 @@ func newFakeHubSpot(t *testing.T) *fakeHubSpot {
 				return
 			}
 			writeFixture(t, w, "contact_search_empty.json")
+			return
+		}
+		if hasQuery(body) {
+			writeFixture(t, w, "contact_search_results.json")
 			return
 		}
 		writeFixture(t, w, "recent_contacts.json")
@@ -142,6 +150,10 @@ func newFakeHubSpot(t *testing.T) *fakeHubSpot {
 	mux.HandleFunc("/crm/v3/objects/tickets/search", func(w http.ResponseWriter, r *http.Request) {
 		body, _ := io.ReadAll(r.Body)
 		w.Header().Set("Content-Type", "application/json")
+		if hasQuery(body) {
+			writeFixture(t, w, "ticket_search_results.json")
+			return
+		}
 		if hasFilterOnProperty(body, "hs_pipeline_stage") {
 			writeFixture(t, w, "tickets_closed.json")
 			return
@@ -180,8 +192,13 @@ func newFakeHubSpot(t *testing.T) *fakeHubSpot {
 	})
 
 	// --- deals ---
-	mux.HandleFunc("/crm/v3/objects/deals/search", func(w http.ResponseWriter, _ *http.Request) {
+	mux.HandleFunc("/crm/v3/objects/deals/search", func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
 		w.Header().Set("Content-Type", "application/json")
+		if hasQuery(body) {
+			writeFixture(t, w, "deal_search_results.json")
+			return
+		}
 		writeFixture(t, w, "recent_deals.json")
 	})
 	mux.HandleFunc("/crm/v3/objects/deals", func(w http.ResponseWriter, r *http.Request) {
@@ -243,6 +260,20 @@ func hasFilterOnProperty(body []byte, propName string) bool {
 		}
 	}
 	return false
+}
+
+// hasQuery reports whether a HubSpot search request body has a non-empty
+// top-level "query" field. Used to differentiate full-text-search calls
+// (hubspot_search_*) from filter-based or sort-only searches that share the
+// same endpoint.
+func hasQuery(body []byte) bool {
+	var req struct {
+		Query string `json:"query"`
+	}
+	if err := json.Unmarshal(body, &req); err != nil {
+		return false
+	}
+	return req.Query != ""
 }
 
 // hasFilterValue is hasFilterOnProperty with a value match - used to flip the
@@ -369,12 +400,12 @@ func TestE2E_ReadOnly_RegistersOnlyReadTools(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTools: %v", err)
 	}
-	if len(listResp.Tools) != 12 {
+	if len(listResp.Tools) != 16 {
 		names := make([]string, 0, len(listResp.Tools))
 		for _, tool := range listResp.Tools {
 			names = append(names, tool.Name)
 		}
-		t.Fatalf("expected 12 read-only tools, got %d: %v", len(listResp.Tools), names)
+		t.Fatalf("expected 16 read-only tools, got %d: %v", len(listResp.Tools), names)
 	}
 
 	got := toolNameSet(listResp.Tools)
@@ -424,7 +455,7 @@ func TestE2E_ReadOnly_RejectsAllWriteToolCalls(t *testing.T) {
 	}
 }
 
-func TestE2E_FullMode_ListsAllTwentyTools(t *testing.T) {
+func TestE2E_FullMode_ListsAllTwentyFourTools(t *testing.T) {
 	fake := newFakeHubSpot(t)
 	s := newServer(t, fake, false)
 	c := initializeClient(t, s)
@@ -433,12 +464,12 @@ func TestE2E_FullMode_ListsAllTwentyTools(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTools: %v", err)
 	}
-	if len(listResp.Tools) != 20 {
+	if len(listResp.Tools) != 24 {
 		names := make([]string, 0, len(listResp.Tools))
 		for _, tool := range listResp.Tools {
 			names = append(names, tool.Name)
 		}
-		t.Fatalf("expected 20 tools in full mode, got %d: %v", len(listResp.Tools), names)
+		t.Fatalf("expected 24 tools in full mode, got %d: %v", len(listResp.Tools), names)
 	}
 
 	got := toolNameSet(listResp.Tools)
@@ -462,15 +493,19 @@ func TestE2E_FullMode_RoundTripsEveryTool(t *testing.T) {
 	}{
 		{tools.ToolNameGetCompany, map[string]any{"company_id": "1001"}},
 		{tools.ToolNameGetRecentCompanies, map[string]any{"limit": 5}},
+		{tools.ToolNameSearchCompanies, map[string]any{"query": "acme", "limit": 5}},
 		{tools.ToolNameGetCompanyActivity, map[string]any{"company_id": "1001"}},
 		{tools.ToolNameGetContact, map[string]any{"contact_id": "2001"}},
 		{tools.ToolNameGetRecentContacts, map[string]any{"limit": 5}},
+		{tools.ToolNameSearchContacts, map[string]any{"query": "alice", "limit": 5}},
 		{tools.ToolNameGetRecentConversations, map[string]any{"limit": 2}},
 		{tools.ToolNameGetTickets, map[string]any{"criteria": "default", "limit": 10}},
+		{tools.ToolNameSearchTickets, map[string]any{"query": "search", "limit": 5}},
 		{tools.ToolNameGetTicketConversationThreads, map[string]any{"ticket_id": "T1"}},
 		{tools.ToolNameGetProperty, map[string]any{"object_type": "companies", "property_name": "name"}},
 		{tools.ToolNameGetDeal, map[string]any{"deal_id": "3001"}},
 		{tools.ToolNameGetRecentDeals, map[string]any{"limit": 5}},
+		{tools.ToolNameSearchDeals, map[string]any{"query": "renewal", "limit": 5}},
 		{tools.ToolNameGetDealPipelines, map[string]any{}},
 		{tools.ToolNameCreateCompany, map[string]any{"properties": map[string]any{"name": "New Co", "domain": "newco.example"}}},
 		{tools.ToolNameUpdateCompany, map[string]any{"company_id": "1001", "properties": map[string]any{"name": "Acme Corp Updated"}}},
@@ -492,6 +527,78 @@ func TestE2E_FullMode_RoundTripsEveryTool(t *testing.T) {
 			var v any
 			if err := json.Unmarshal([]byte(body), &v); err != nil {
 				t.Fatalf("tool %q output not JSON: %v\nbody=%s", tc.name, err, body)
+			}
+		})
+	}
+}
+
+func TestE2E_SearchTools_SurfaceFixtureContent(t *testing.T) {
+	fake := newFakeHubSpot(t)
+	s := newServer(t, fake, false)
+	c := initializeClient(t, s)
+
+	cases := []struct {
+		tool       string
+		query      string
+		wantSubstr []string
+	}{
+		{
+			tool:       tools.ToolNameSearchCompanies,
+			query:      "acme",
+			wantSubstr: []string{"Acme Search Co", "1101", "company-cursor-NEXT"},
+		},
+		{
+			tool:       tools.ToolNameSearchContacts,
+			query:      "alice",
+			wantSubstr: []string{"alice.search@acme.example", "2101", "contact-cursor-NEXT"},
+		},
+		{
+			tool:       tools.ToolNameSearchDeals,
+			query:      "renewal",
+			wantSubstr: []string{"Acme Search Renewal", "3101", "deal-cursor-NEXT"},
+		},
+		{
+			tool:       tools.ToolNameSearchTickets,
+			query:      "search",
+			wantSubstr: []string{"Search returned wrong results", "T200", "ticket-cursor-NEXT"},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.tool, func(t *testing.T) {
+			res := callTool(t, c, tc.tool, map[string]any{"query": tc.query, "limit": 5})
+			if res.IsError {
+				t.Fatalf("tool %q returned error: %s", tc.tool, textContent(t, res))
+			}
+			body := textContent(t, res)
+			var v any
+			if err := json.Unmarshal([]byte(body), &v); err != nil {
+				t.Fatalf("tool %q output not JSON: %v\nbody=%s", tc.tool, err, body)
+			}
+			for _, want := range tc.wantSubstr {
+				if !strings.Contains(body, want) {
+					t.Errorf("tool %q response missing %q\nbody=%s", tc.tool, want, body)
+				}
+			}
+		})
+	}
+}
+
+func TestE2E_SearchTools_RejectMissingQuery(t *testing.T) {
+	fake := newFakeHubSpot(t)
+	s := newServer(t, fake, false)
+	c := initializeClient(t, s)
+
+	for _, name := range []string{
+		tools.ToolNameSearchCompanies,
+		tools.ToolNameSearchContacts,
+		tools.ToolNameSearchDeals,
+		tools.ToolNameSearchTickets,
+	} {
+		t.Run(name, func(t *testing.T) {
+			res := callTool(t, c, name, map[string]any{})
+			if !res.IsError {
+				t.Fatalf("expected IsError=true on missing query, got %s", textContent(t, res))
 			}
 		})
 	}
