@@ -5,6 +5,8 @@ written in Go and shipped as a single static binary.
 
 ## Quickstart
 
+### Docker
+
 ```sh
 docker run --rm -i \
   -e HUBSPOT_ACCESS_TOKEN=pat-na1-... \
@@ -21,6 +23,31 @@ For Claude Desktop, add to `claude_desktop_config.json`:
       "args": ["run", "--rm", "-i",
                "-e", "HUBSPOT_ACCESS_TOKEN",
                "ghcr.io/zekker6/mcp-hubspot-go:latest"],
+      "env": {
+        "HUBSPOT_ACCESS_TOKEN": "pat-na1-..."
+      }
+    }
+  }
+}
+```
+
+### Native binary via mise
+
+Install [mise](https://mise.jdx.dev/), then pull the released binary from
+GitHub:
+
+```sh
+mise use -g github:zekker6/mcp-hubspot-go
+```
+
+This drops `mcp-hubspot` onto your `PATH`. Pin a specific tag with
+`github:zekker6/mcp-hubspot-go@v0.1.0`. For Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "hubspot": {
+      "command": "mcp-hubspot",
       "env": {
         "HUBSPOT_ACCESS_TOKEN": "pat-na1-..."
       }
