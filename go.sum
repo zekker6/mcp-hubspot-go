@@ -1,5 +1,7 @@
 github.com/belong-inc/go-hubspot v0.10.1 h1:KnTKTg/GqvdZHr7HFSP/B+pSNvJ7QGctbKuvaoayX38=
 github.com/belong-inc/go-hubspot v0.10.1/go.mod h1:UemuxWPbKBAWh8n9KKuCZR9H/5yOkMD7/g5KhDiCg7A=
+github.com/belong-inc/go-hubspot v0.11.0 h1:x9hC+tgA6D9ahCPr9RTND2RWWwDH2bEDg7zO6Jwi3mQ=
+github.com/belong-inc/go-hubspot v0.11.0/go.mod h1:UemuxWPbKBAWh8n9KKuCZR9H/5yOkMD7/g5KhDiCg7A=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=
