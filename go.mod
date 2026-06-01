@@ -3,7 +3,7 @@ module github.com/zekker6/mcp-hubspot-go
 go 1.26.2
 
 require (
-	github.com/belong-inc/go-hubspot v0.10.1
+	github.com/belong-inc/go-hubspot v0.11.0
 	github.com/mark3labs/mcp-go v0.54.1
 	go.uber.org/zap v1.28.0
 )
