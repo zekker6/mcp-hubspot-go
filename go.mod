@@ -4,7 +4,7 @@ go 1.26.2
 
 require (
 	github.com/belong-inc/go-hubspot v0.11.0
-	github.com/mark3labs/mcp-go v0.55.0
+	github.com/mark3labs/mcp-go v0.55.1
 	go.uber.org/zap v1.28.0
 )
 
