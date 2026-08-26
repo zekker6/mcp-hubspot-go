@@ -1,5 +1,5 @@
 [tools]
-"npm:@modelcontextprotocol/inspector" = { version = "2.3.0", trust_policy_excludes = [
+"npm:@modelcontextprotocol/inspector" = { version = "2.4.0", trust_policy_excludes = [
   "pino@9.14.0",
 ] }
 go = "1.27.0"
